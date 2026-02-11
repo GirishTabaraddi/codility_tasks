@@ -2,60 +2,61 @@
 setlocal EnableDelayedExpansion
 
 :: =========================================================
-:: 1. CONFIGURATION & PATHS (Relative to this script)
+:: CONFIGURATION & PATHS (Relative to this script)
 :: =========================================================
-:: Get the root directory (assuming script is in root or build_scripts)
-:: Adjust '..' if this script is inside a subfolder
 pushd %~dp0..
-set "ROOT_DIR=%CD%"
+set "REPO_ROOT=%CD%"
 popd
 
-:: Toolchain Paths (From your submodule)
-set "TOOLS_DIR=%ROOT_DIR%\build_tools"
+:: Toolchain Paths
+set "TOOLS_DIR=%REPO_ROOT%\build_tools"
 set "MINGW_BIN=%TOOLS_DIR%\MinGW\bin"
 set "NINJA_EXE=%TOOLS_DIR%\ninja-win\ninja.exe"
 
 :: CMake Settings
-set "SOURCE_DIR=%ROOT_DIR%\src"
-set "BUILD_ROOT=%ROOT_DIR%\build"
+set "SOURCE_DIR=%REPO_ROOT%\src"
+set "BUILD_ROOT=%REPO_ROOT%\build"
 
 :: Add MinGW to PATH so the generated .exe can find DLLs (libstdc++, etc.)
 set "PATH=%MINGW_BIN%;%PATH%"
 
 :: =========================================================
-:: 2. PROJECT DISCOVERY (Auto-scan source folder)
+:: ARGUMENT PARSING 
 :: =========================================================
-echo.
-echo ==========================================
-echo      PROJECT BUILDER (MinGW + Ninja)
-echo ==========================================
-echo.
 
+:: CHECK Project Name (Argument 1)
+if not "%~1"=="" (
+    set "PROJECT_NAME=%~1"
+    echo [AUTO] Project selected: !PROJECT_NAME!
+    goto CHECK_BUILD_TYPE
+)
+
+:: If no argument, run the interactive menu
+echo.
+echo ==========================================
+echo      PROJECT BUILDER (Interactive)
+echo ==========================================
 set index=0
-echo Available Projects:
-echo ------------------
-
-:: Loop through subdirectories in 'src'
 for /d %%D in ("%SOURCE_DIR%\*") do (
     set /a index+=1
     set "PROJ_!index!=%%~nxD"
     echo   !index!. %%~nxD
 )
-
-if %index%==0 (
-    echo [ERROR] No projects found in %SOURCE_DIR%
-    pause
-    exit /b
-)
-
-echo.
 :ASK_PROJECT
 set /p "CHOICE=Select a project [1-%index%]: "
 if "!PROJ_%CHOICE%!"=="" goto ASK_PROJECT
 set "PROJECT_NAME=!PROJ_%CHOICE%!"
 
+:CHECK_BUILD_TYPE
+:: CHECK 2: Build Type (Argument 2)
+if not "%~2"=="" (
+    set "BUILD_TYPE=%~2"
+    echo [AUTO] Build Type selected: !BUILD_TYPE!
+    goto START_BUILD
+)
+
 :: =========================================================
-:: 3. BUILD TYPE SELECTION
+:: BUILD TYPE SELECTION
 :: =========================================================
 echo.
 echo Select Build Type:
@@ -70,8 +71,10 @@ if "%TYPE_CHOICE%"=="2" (
 )
 
 :: =========================================================
-:: 4. CMAKE CONFIGURATION & BUILD
+:: CMAKE CONFIGURATION & BUILD
 :: =========================================================
+:START_BUILD
+
 set "BUILD_DIR=%BUILD_ROOT%\%PROJECT_NAME%\%BUILD_TYPE%"
 
 echo.
@@ -85,7 +88,7 @@ if exist "%BUILD_DIR%\CMakeCache.txt" del "%BUILD_DIR%\CMakeCache.txt"
 
 :: Run CMake
 :: We pass the Compiler paths directly to override any system defaults
-cmake -S "%ROOT_DIR%" -B "%BUILD_DIR%" -G "Ninja" ^
+cmake -S "%REPO_ROOT%" -B "%BUILD_DIR%" -G "Ninja" ^
     -DCMAKE_MAKE_PROGRAM="%NINJA_EXE%" ^
     -DCMAKE_C_COMPILER="%MINGW_BIN%\gcc.exe" ^
     -DCMAKE_CXX_COMPILER="%MINGW_BIN%\g++.exe" ^
@@ -108,7 +111,7 @@ if %errorlevel% neq 0 (
 )
 
 :: =========================================================
-:: 5. RUN EXECUTION (Optional)
+:: RUN EXECUTION
 :: =========================================================
 echo.
 echo Build Successful! 
@@ -116,6 +119,7 @@ set /p "RUN=Run the program now? (Y/N): "
 if /i "%RUN%"=="Y" (
     echo.
     echo ------------------------------------------------
+    echo.
     "%BUILD_DIR%\bin\%PROJECT_NAME%.exe"
     echo.
     echo ------------------------------------------------
