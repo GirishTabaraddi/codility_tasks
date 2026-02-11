@@ -1,0 +1,15 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+	"settings": {
+		"terminal.integrated.env.windows":{
+			"RUSTY_ROOT": "${workspaceFolder}",
+			"PATH": "${workspaceFolder}/aurix_local_projects/build_toolchain/CMake/bin;${workspaceFolder}/aurix_local_projects/build_toolchain/Python/python.exe;${env:PATH}",
+			"RLM_LICENSE": "C:\\HighTec\\licenses"
+		},
+        "git.ignoreLimitWarning": true
+    }
+}

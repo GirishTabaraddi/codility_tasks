@@ -39,3 +39,10 @@
 
 # debug information files
 *.dwo
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore Bazel symlinks (shortcuts to the build output)
+/bazel-*

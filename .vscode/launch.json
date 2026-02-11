@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (Automatic)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bazel-bin/src/${relativeFileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "windows": {
+                "program": "${workspaceFolder}/bazel-bin/src/${relativeFileDirname}/${fileBasenameNoExtension}.exe"
+            },
+            "preLaunchTask": "Build Current Package"
+        }
+    ]
+}
