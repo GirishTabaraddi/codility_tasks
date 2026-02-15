@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Active Project",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/${input:projectName}/Debug/bin/Debug/${input:projectName}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/${input:projectName}/Debug/bin/Debug",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            // Points to GDB inside your submodule
+            "miDebuggerPath": "${workspaceFolder}/build_tools/MinGW/bin/gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            // Before debugging, run the build task defined in tasks.json
+            "preLaunchTask": "Build Project"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "projectName",
+            "type": "promptString",
+            "description": "Enter the Project Name to Debug",
+            "default": "hello-world"
+        }
+    ]
+}

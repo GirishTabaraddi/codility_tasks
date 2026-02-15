@@ -1,0 +1,44 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Selected Project",
+            "type": "shell",
+            "command": "${workspaceFolder}/build_scripts/build.bat",
+            "args": [
+                "${input:projectName}",
+                "${input:BuildType}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "projectName",
+            "type": "pickString",
+            "description": "Select the project to build",
+            "options": [
+                "hello-world"
+            ],
+            "default": "hello-world"
+        },
+        {
+            "id": "BuildType",
+            "type": "pickString",
+            "description": "Select the build type",
+            "options": [
+                "Debug",
+                "Release"
+            ],
+            "default": "Debug"
+        }
+    ]
+}
